@@ -1,32 +1,54 @@
 
 # alx-fe-capstone
 
-## Stepwise Approach
+## Updated Tasks & Progress
+
+### ✅ Completed
 
 1. **Project Initialization**
-	- Set up project using Vite, React, and TypeScript.
-	- Initialized git repository and created base folder structure.
+	- Vite, React, TypeScript setup
+	- Git repo and folder structure
 
 2. **Styling Setup**
-	- Installed and configured TailwindCSS for utility-first styling.
-	- Customized global styles and responsive layout.
+	- TailwindCSS installed/configured
+	- Global styles and responsive layout
 
 3. **State Management**
-	- Installed Redux and Redux Toolkit for global state management.
-	- Created slices for UI state (e.g., mobile navbar toggle).
+	- Redux Toolkit for global state
+	- Slices for UI, theme, page, user, quiz
 
 4. **Component Structure**
-	- Built reusable components: Sidebar, MobileNavbar, Footer.
-	- Implemented responsive navigation (sidebar for desktop, dropdown for mobile).
+	- Sidebar (desktop, collapsible, dark mode)
+	- MobileNavbar (mobile, toggles, closes)
+	- TopBar, Footer, HomeDashboard
+	- Quiz component (Redux-powered)
+	- UserHome (quizzes table)
 
-5. **API Integration**
-	- Installed Axios for HTTP requests (to be used for quiz data, etc.).
+5. **Quiz Workflow**
+	- Quiz state managed via Redux
+	- Sample questions in `data.json`
+	- Quiz navigation, answer selection, scoring
+	- Analogue SVG countdown timer next to questions
 
-6. **Icons and UI Enhancements**
-	- Added Heroicons for navigation and UI icons.
+6. **Sidebar & Navigation**
+	- Sidebar uses `<ul>`, `<li>`, `<a>` for nav
+	- "Take Quiz" nav item triggers quiz workflow
+	- Indentation and hover color fixes
 
-7. **Testing and Linting**
-	- Configured ESLint and TypeScript for code quality.
+7. **Icons and UI Enhancements**
+	- Heroicons for navigation and actions
+
+8. **Testing and Linting**
+	- ESLint and TypeScript configured
+	- Lint errors fixed after major changes
+
+### ⏳ Pending / In Progress
+
+- API integration for real quiz/user data
+- User authentication and roles
+- Quiz review/feedback features
+- More dashboard analytics
+- Accessibility improvements
 
 ## Technology Stack
 

@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-
-@import "tailwindcss";
-
 a {
   color: #646cff;
   text-decoration: inherit;
@@ -19,32 +16,26 @@ body {
   background-color: #f8fafc;
 }
 
-
 button {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
+  @apply bg-blue-200 text-black outline outline-2;
+  font-family: inherit;
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
 }
-button:hover {
-  font-family: inherit;
-  background-color: #1a1a1a;
-  transition: border-color 0.25s;
-}
 
 @media (prefers-color-scheme: light) {
 }
+
 button:hover {
-  border-color: #646cff;
+  @apply bg-blue-300 text-black;
 }
+
 button:focus,
 button:focus-visible {
+  @apply text-black bg-violet-300;
   outline: 4px auto -webkit-focus-ring-color;
 }
 

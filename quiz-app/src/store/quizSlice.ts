@@ -19,6 +19,7 @@ export interface QuizState {
   showResult: boolean;
   score: number;
   timer: number;
+  answered: { [key: number]: string };
 }
 
 const initialState: QuizState = {
@@ -30,20 +31,24 @@ const initialState: QuizState = {
   selected: null,
   showResult: false,
   score: 0,
-  timer: 60,
+  timer: 120,
+  answered: {},
 };
 
 const quizSlice = createSlice({
   name: 'quiz',
   initialState,
   reducers: {
+    answerQuestion(state, action: PayloadAction<{ index: number; answer: string }>) {
+      state.answered[action.payload.index] = action.payload.answer;
+    },
     setCurrentQuiz(state, action: PayloadAction<{ title: string; questions: QuizQuestion[] }>) {
       state.currentQuiz = action.payload;
       state.current = 0;
       state.selected = null;
       state.showResult = false;
       state.score = 0;
-      state.timer = 60;
+      state.timer = 120;
     },
     selectAnswer(state, action: PayloadAction<string>) {
       state.selected = action.payload;

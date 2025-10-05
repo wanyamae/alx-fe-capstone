@@ -2,13 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../store';
 import { restartQuiz, setCurrentQuiz } from '../../store/quizSlice';
+import type { AnswersColumnProps } from '../../interface';
 
-import type { QuizQuestion } from '../../store/quizSlice';
-
-interface AnswersColumnProps {
-  questions: QuizQuestion[];
-  answered: { [key: number]: string };
-}
 
 const AnswersColumn: React.FC<AnswersColumnProps> = ({ questions, answered }) => {
   const dispatch = useDispatch();

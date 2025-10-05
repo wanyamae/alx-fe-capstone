@@ -12,6 +12,7 @@ const TrackingColumn: React.FC<TrackingColumnProps> = ({ questions, answered, cu
           {questions.map((q, idx) => (
             <li key={q.id}>
               <a
+                type="button"
                 className={`w-full flex items-center px-2 py-1 rounded transition-colors text-left font-medium
                   ${current === idx ? 'bg-blue-300 text-green-500' : answered[idx] !== undefined ? (answered[idx] ? 'bg-green-100 text-green-900 dark:bg-green-900 dark:text-green-100' : 'bg-red-100 text-red-900 dark:bg-red-900 dark:text-red-100') : 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100'}
                   hover:bg-blue-200 dark:hover:bg-blue-700`}
@@ -26,7 +27,8 @@ const TrackingColumn: React.FC<TrackingColumnProps> = ({ questions, answered, cu
       {/* Mobile: Horizontal row */}
       <div className="sm:hidden flex w-full overflow-x-auto gap-2 p-2 bg-gray-50 dark:bg-gray-900 justify-center">
         {questions.map((q, idx) => (
-          <a
+          <button
+            type="button"
             key={q.id}
             className={`w-8 h-8 flex items-center justify-center rounded-full font-bold border-2
               ${current === idx ? 'border-blue-500 bg-blue-500 text-white' 
@@ -37,7 +39,7 @@ const TrackingColumn: React.FC<TrackingColumnProps> = ({ questions, answered, cu
             aria-label={`Go to question ${idx + 1}`}
           >
             {idx + 1}
-          </a>
+          </button>
         ))}
       </div>
     </>

@@ -39,6 +39,9 @@ const quizSlice = createSlice({
   name: 'quiz',
   initialState,
   reducers: {
+    setCurrent(state, action: PayloadAction<number>) {
+      state.current = action.payload;
+    },
     answerQuestion(state, action: PayloadAction<{ index: number; answer: string }>) {
       state.answered[action.payload.index] = action.payload.answer;
     },
@@ -82,5 +85,5 @@ const quizSlice = createSlice({
   },
 });
 
-export const { setCurrentQuiz, selectAnswer, nextQuestion, restartQuiz, finishQuiz, tick } = quizSlice.actions;
+export const { setCurrentQuiz, selectAnswer, nextQuestion, restartQuiz, finishQuiz, tick, setCurrent } = quizSlice.actions;
 export default quizSlice.reducer;

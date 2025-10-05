@@ -17,8 +17,9 @@ body {
 }
 
 button {
-  @apply bg-blue-200 text-black outline outline-2;
+  @apply text-black outline outline-2;
   font-family: inherit;
+  background-color: inherit;
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;

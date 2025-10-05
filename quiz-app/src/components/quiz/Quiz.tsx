@@ -3,8 +3,7 @@ import AnswersColumn from './AnswersColumn';
 import TrackingColumn from './TrackingColumn';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../store';
-import { tick, setCurrentQuiz, selectAnswer, nextQuestion, restartQuiz, finishQuiz } from '../../store/quizSlice';
-import { toggleDark } from '../../store/themeSlice';
+import { tick, setCurrentQuiz, selectAnswer, nextQuestion, restartQuiz, finishQuiz, setCurrent } from '../../store/quizSlice';
 import quizData from '../../data.json';
 
 const Quiz = () => {
@@ -13,7 +12,7 @@ const Quiz = () => {
   const current = useSelector((state: RootState) => state.quiz.current);
   // Handler to navigate to a specific question
   const handleNavigate = (index: number) => {
-    dispatch({ type: 'quiz/setCurrent', payload: index });
+    dispatch(setCurrent(index));
   };
   const selected = useSelector((state: RootState) => state.quiz.selected);
   const showResult = useSelector((state: RootState) => state.quiz.showResult);
@@ -66,7 +65,10 @@ const Quiz = () => {
   };
 
   return (
-    <div className={`flex flex-col w-full mt-16 mx-auto p-6 rounded-xl shadow ${dark ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'}`}>
+    <div
+      className={`flex flex-col w-full mt-16 mx-auto p-6 rounded-xl shadow
+      ${dark ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'}`}
+    >
       {/* Mobile Tracking Row */}
       <div className="sm:hidden mb-4">
         <TrackingColumn
@@ -90,15 +92,6 @@ const Quiz = () => {
         <div className="flex-1 px-8">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-bold">Quiz</h2>
-            <button
-              className={`px-3 py-1 bg-blue-500 rounded transition-colors ${dark ? 'bg-blue-700 hover:bg-gray-600 text-gray-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
-              onClick={() => {
-                dispatch(toggleDark());
-                document.documentElement.classList.toggle('dark', !dark);
-              }}
-            >
-              {dark ? 'Light Mode' : 'Dark Mode'}
-            </button>
           </div>
           {showResult ? (
             showAnswers ? (
@@ -117,11 +110,19 @@ const Quiz = () => {
           ) : (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <span className="font-medium">Question {current + 1} of {questions.length}</span>
-                <span className="px-3 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 font-mono">{timer}s</span>
+                <span className="font-medium">
+                  Question {current + 1} of {questions.length}
+                </span>
+                <span className="px-3 py-1 rounded bg-blue-100 dark:bg-blue-900
+                text-blue-700 dark:text-blue-200 font-mono"
+                >
+                  {timer}s
+                </span>
               </div>
-              <p className="mt-2 text-lg">{questions[current]?.question}</p>
-              <div className="flex flex-col gap-2 mt-4">
+              <p className="mt-2 text-lg">
+                {questions[current]?.question}
+              </p>
+              <div className="flex flex-col gap-2 mt-4 mb-2">
                 {questions[current]?.options.map((opt: string) => (
                   <button
                     key={opt}
@@ -139,20 +140,23 @@ const Quiz = () => {
               </div>
               <div className="flex gap-2 mt-6">
                 <button
-                  className="px-4 py-2 rounded bg-yellow-400 text-white font-semibold hover:bg-yellow-500"
+                  className="px-4 py-2 rounded bg-yellow-400 text-white font-semibold
+                  hover:bg-yellow-500"
                   onClick={handleSkip}
                 >
                   Skip
                 </button>
                 <button
-                  className="px-4 py-2 rounded bg-green-500 text-white font-semibold hover:bg-green-600"
+                  className="px-4 py-2 rounded bg-green-500 text-white font-semibold
+                  hover:bg-green-600"
                   onClick={current < questions.length - 1 ? handleNext : handleFinish}
                   disabled={
                     !selected && !answered[current] ||
-                    (current === questions.length - 1 && Object.values(answered).some(a => a === ''))
+                    (current === questions.length - 1 && 
+                      Object.values(answered).some(a => a === ''))
                   }
                 >
-                  {current < questions.length - 1 ? 'Next' : 'Finish'}
+                  {current < questions.length - 1 ? 'Submit' : 'Finish'}
                 </button>
               </div>
             </div>

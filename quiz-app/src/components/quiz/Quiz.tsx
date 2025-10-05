@@ -3,7 +3,7 @@ import AnswersColumn from './AnswersColumn';
 import TrackingColumn from './TrackingColumn';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../store';
-import { tick, setCurrentQuiz, selectAnswer, nextQuestion, restartQuiz, finishQuiz, setCurrent } from '../../store/quizSlice';
+import { tick, setCurrentQuiz, selectAnswer, nextQuestion, restartQuiz, finishQuiz, setCurrent, addAttemptedQuiz } from '../../store/quizSlice';
 import quizData from '../../data.json';
 
 const Quiz = () => {
@@ -25,8 +25,10 @@ const Quiz = () => {
   const [showAnswers, setShowAnswers] = useState(false);
 
   useEffect(() => {
-    // Load quiz questions into Redux on mount
-    dispatch(setCurrentQuiz({ title: 'Sample Quiz', questions: quizData }));
+    // Load first quiz from data.json into Redux on mount
+    if (Array.isArray(quizData) && quizData.length > 0) {
+      dispatch(setCurrentQuiz(quizData[0]));
+    }
   }, [dispatch]);
 
   useEffect(() => {
@@ -54,13 +56,28 @@ const Quiz = () => {
   };
 
   const handleFinish = () => {
+    // Check last answer before finishing
+    const lastIdx = current;
+    const lastAnswer = answered[lastIdx];
+    if (lastAnswer && lastAnswer === questions[lastIdx]?.answer) {
+      dispatch({ type: 'quiz/incrementScore' });
+    }
     dispatch(finishQuiz());
+    // Store attempted quiz in Redux
+    dispatch(addAttemptedQuiz({
+      id: quiz.id,
+      title: quiz.title,
+      score,
+      date: new Date().toISOString(),
+    }));
     setShowAnswers(true);
   };
 
   const handleRestart = () => {
     dispatch(restartQuiz());
-    dispatch(setCurrentQuiz({ title: 'Sample Quiz', questions: quizData }));
+    if (Array.isArray(quizData) && quizData.length > 0) {
+      dispatch(setCurrentQuiz(quizData[0]));
+    }
     setShowAnswers(false);
   };
 
@@ -91,7 +108,7 @@ const Quiz = () => {
         {/* Main Quiz Column */}
         <div className="flex-1 px-8">
           <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-bold">Quiz</h2>
+            <h2 className="text-xl font-bold">{quiz.title}</h2>
           </div>
           {showResult ? (
             showAnswers ? (

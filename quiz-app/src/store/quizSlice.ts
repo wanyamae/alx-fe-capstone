@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 
+
 export interface QuizQuestion {
   id: number;
   question: string;
@@ -9,22 +10,37 @@ export interface QuizQuestion {
   answer: string;
 }
 
+export interface Quiz {
+  id: string;
+  title: string;
+  questions: QuizQuestion[];
+}
+
+
+export interface QuizAttempt {
+  id: string;
+  title: string;
+  score: number;
+  date: string;
+}
+
 export interface QuizState {
-  currentQuiz: {
-    title: string;
-    questions: QuizQuestion[];
-  };
+  currentQuiz: Quiz;
   current: number;
   selected: string | null;
   showResult: boolean;
   score: number;
   timer: number;
   answered: { [key: number]: string };
+  allQuizzes: Quiz[];
+  completedQuizzes: QuizAttempt[];
+  attemptedQuizzes: QuizAttempt[];
 }
 
 const initialState: QuizState = {
   currentQuiz: {
-    title: 'Sample Quiz',
+    id: '',
+    title: '',
     questions: [],
   },
   current: 0,
@@ -33,7 +49,11 @@ const initialState: QuizState = {
   score: 0,
   timer: 120,
   answered: {},
+  allQuizzes: [],
+  completedQuizzes: [],
+  attemptedQuizzes: [],
 };
+
 
 const quizSlice = createSlice({
   name: 'quiz',
@@ -45,7 +65,7 @@ const quizSlice = createSlice({
     answerQuestion(state, action: PayloadAction<{ index: number; answer: string }>) {
       state.answered[action.payload.index] = action.payload.answer;
     },
-    setCurrentQuiz(state, action: PayloadAction<{ title: string; questions: QuizQuestion[] }>) {
+    setCurrentQuiz(state, action: PayloadAction<Quiz>) {
       state.currentQuiz = action.payload;
       state.current = 0;
       state.selected = null;
@@ -82,8 +102,43 @@ const quizSlice = createSlice({
         state.timer -= 1;
       }
     },
+    setAllQuizzes(state, action: PayloadAction<Quiz[]>) {
+      state.allQuizzes = action.payload;
+    },
+    addCompletedQuiz(state, action: PayloadAction<{
+      id: string;
+      title: string;
+      score: number;
+      date: string;
+    }>) {
+      state.completedQuizzes.push(action.payload);
+    },
+    addAttemptedQuiz(state, action: PayloadAction<QuizAttempt>) {
+      // Only add if not already attempted (by id and score/date)
+      const exists = state.attemptedQuizzes.some(
+        (q: QuizAttempt) => q.id === action.payload.id && q.date === action.payload.date
+      );
+      if (!exists) {
+        state.attemptedQuizzes.push(action.payload);
+      }
+    },
+    incrementScore(state) {
+      state.score += 1;
+    },
   },
 });
 
-export const { setCurrentQuiz, selectAnswer, nextQuestion, restartQuiz, finishQuiz, tick, setCurrent } = quizSlice.actions;
+export const { 
+  setCurrentQuiz, 
+  selectAnswer, 
+  nextQuestion, 
+  restartQuiz,
+  finishQuiz,
+  tick,
+  setCurrent,
+  setAllQuizzes,
+  addCompletedQuiz,
+  incrementScore,
+  addAttemptedQuiz
+} = quizSlice.actions;
 export default quizSlice.reducer;

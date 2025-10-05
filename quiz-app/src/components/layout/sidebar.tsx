@@ -4,7 +4,7 @@ import { toggleDark } from '../../store/themeSlice';
 import type { RootState } from '../../store';
 import { MoonIcon, SunIcon, HomeModernIcon, ExclamationTriangleIcon, PhoneIcon, ChevronLeftIcon, ChevronRightIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
-
+import { Link } from 'react-router-dom';
 
 function Sidebar({ className = "" }: SidebarProps) {
   const dark = useSelector((state: RootState) => state.theme.dark);
@@ -42,20 +42,14 @@ function Sidebar({ className = "" }: SidebarProps) {
             </a>
           </li>
           <li>
-            <a
-              href="#"
+            <Link
+              to="/quiz"
               role="button"
               className="flex items-center px-4 py-2 rounded hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-900 dark:text-gray-100 font-medium transition-colors"
-              onClick={e => {
-                e.preventDefault();
-                if (typeof window !== 'undefined') {
-                  window.dispatchEvent(new CustomEvent('show-quiz'));
-                }
-              }}
             >
               <AcademicCapIcon className="h-6 w-6 mr-2" />
               {!collapsed && 'Take Quiz'}
-            </a>
+            </Link>
           </li>
         </ul>
             {/* Dark Mode Toggle */}

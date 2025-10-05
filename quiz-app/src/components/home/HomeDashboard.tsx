@@ -1,11 +1,15 @@
 // src/components/HomeDashboard.tsx
-
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
+import QuizList from '../dashboard/QuizList';
+import { useNavigate } from 'react-router-dom';
+import PerformanceChart from '../dashboard/PerformanceChart';
+import { BriefcaseIcon, UserGroupIcon, StarIcon, ScaleIcon } from '@heroicons/react/24/outline';
 
 export default function HomeDashboard() {
   const dark = useSelector((state: RootState) => state.theme.dark);
-  // Demo: show effect of quizzes
+  const navigate = useNavigate();
+
   const handleViewQuizzes = () => {
     window.alert('This would show the quizzes table for ordinary users.');
   };
@@ -22,32 +26,49 @@ export default function HomeDashboard() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Example Stat Card */}
-        <div className={`rounded-xl shadow p-5 flex flex-col items-start ${dark ? 'bg-gray-800' : 'bg-white'}`}>
-          <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>Total Quizzes</span>
+        <div className={`rounded-xl shadow p-5 flex flex-col items-start ${dark ?
+          'bg-gray-800' : 'bg-white'}`}>
+          <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+            <BriefcaseIcon className="h-5 w-5 inline-block mr-1" /> 
+            Total Quizzes
+          </span>
           <span className="text-2xl font-bold mt-2">24</span>
         </div>
         {/* Add more cards as needed */}
-        <div className={`rounded-xl shadow p-5 flex flex-col items-start ${dark ? 'bg-gray-800' : 'bg-white'}`}>
-          <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>Active Users</span>
+        <div className={`rounded-xl shadow p-5 flex flex-col items-start ${dark ?
+          'bg-gray-800' : 'bg-white'}`}>
+          <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+            <UserGroupIcon className="h-5 w-5 inline-block mr-1" />
+            Active Users
+          </span>
           <span className="text-2xl font-bold mt-2">120</span>
         </div>
-        <div className={`rounded-xl shadow p-5 flex flex-col items-start ${dark ? 'bg-gray-800' : 'bg-white'}`}>
-          <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>Completed Quizzes</span>
+        <div className={`rounded-xl shadow p-5 flex flex-col items-start ${dark ?
+          'bg-gray-800' : 'bg-white'}`}>
+          <span className={`text-sm ${dark ?
+            'text-gray-400' : 'text-gray-500'}`}>
+              <StarIcon className="h-5 w-5 inline-block mr-1" />
+              Completed Quizzes
+            </span>
           <span className="text-2xl font-bold mt-2">320</span>
         </div>
-        <div className={`rounded-xl shadow p-5 flex flex-col items-start ${dark ? 'bg-gray-800' : 'bg-white'}`}>
-          <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>Pending Reviews</span>
+        <div className={`rounded-xl shadow p-5 flex flex-col items-start ${dark ?
+          'bg-gray-800' : 'bg-white'}`}>
+          <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+            <ScaleIcon className="h-5 w-5 inline-block mr-1" />
+            Pending Reviews
+          </span>
           <span className="text-2xl font-bold mt-2">5</span>
         </div>
       </div>
-      {/* Recent Activity Section */}
+      { /* Performance Chart Section */}
       <div className="mt-10">
-        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-        <ul className={`divide-y rounded-xl shadow ${dark ? 'divide-gray-700 bg-gray-800' : 'divide-gray-200 bg-white'}`}>
-          <li className="p-4">User John completed 'React Basics' quiz.</li>
-          <li className="p-4">User Jane started 'Redux Advanced' quiz.</li>
+        <PerformanceChart />
+      </div>
+      {/* Quizzes List */}
+      <div className="mt-10">
+          <QuizList onSelectQuiz={(quizId: string) => navigate(`/quiz/${quizId}`)} />
           {/* Add more activity items */}
-        </ul>
       </div>
     </div>
   );

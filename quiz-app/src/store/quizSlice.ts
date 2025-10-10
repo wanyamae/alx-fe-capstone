@@ -1,3 +1,50 @@
+import { createAsyncThunk } from '@reduxjs/toolkit';
+
+// Async thunk to fetch quizzes for a category
+export const fetchQuizzesByCategory = createAsyncThunk(
+  'quiz/fetchQuizzesByCategory',
+  async (category: { id: number; name: string }, { getState, rejectWithValue }) => {
+    // Check cache first
+    const state = getState() as { quiz: QuizState };
+    const cached = state.quiz.quizCache?.[category.id];
+    if (cached && cached.length > 0) {
+      return { quizzes: cached, categoryId: category.id };
+    }
+    try {
+      const res = await fetch(`https://opentdb.com/api.php?amount=10&category=${category.id}&type=multiple`);
+      if (!res.ok) {
+        if (res.status === 429) return rejectWithValue('You are being rate limited by OpenTDB. Please wait and try again.');
+        return rejectWithValue('Failed to fetch quizzes.');
+      }
+      const data = await res.json();
+      if (data.response_code !== 0) return rejectWithValue('No quizzes found for this category.');
+      const quizzes = [{
+        id: 'opentdb-' + category.id,
+        title: category.name,
+        questions: data.results.map((q: unknown, idx: number) => {
+          const questionObj = q as { question: string; correct_answer: string; incorrect_answers: string[] };
+          return {
+            id: idx,
+            question: questionObj.question,
+            options: shuffle([questionObj.correct_answer, ...questionObj.incorrect_answers]),
+            answer: questionObj.correct_answer,
+          };
+        }),
+      }];
+      return { quizzes, categoryId: category.id };
+    } catch {
+      return rejectWithValue('Network error.');
+    }
+  }
+);
+
+function shuffle(array: string[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
@@ -34,6 +81,7 @@ export interface QuizState {
   timer: number;
   answered: { [key: number]: string };
   allQuizzes: Quiz[];
+  quizCache: { [categoryId: string]: Quiz[] };
   completedQuizzes: QuizAttempt[];
   attemptedQuizzes: QuizAttempt[];
 }
@@ -51,6 +99,7 @@ const initialState: QuizState = {
   timer: 120,
   answered: {},
   allQuizzes: [],
+  quizCache: {},
   completedQuizzes: [],
   attemptedQuizzes: [],
 };
@@ -127,6 +176,20 @@ const quizSlice = createSlice({
     incrementScore(state) {
       state.score += 1;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchQuizzesByCategory.pending, (state) => {
+        state.allQuizzes = [];
+      })
+      .addCase(fetchQuizzesByCategory.fulfilled, (state, action) => {
+        state.allQuizzes = action.payload.quizzes;
+        state.quizCache[action.payload.categoryId] = action.payload.quizzes;
+      })
+      .addCase(fetchQuizzesByCategory.rejected, (state) => {
+        state.allQuizzes = [];
+        // Optionally, you could add an error field to state and set it here
+      });
   },
 });
 

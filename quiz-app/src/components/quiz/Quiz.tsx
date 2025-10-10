@@ -4,7 +4,8 @@ import TrackingColumn from './TrackingColumn';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../store';
 import { tick, setCurrentQuiz, selectAnswer, nextQuestion, restartQuiz, finishQuiz, setCurrent, addAttemptedQuiz } from '../../store/quizSlice';
-import quizData from '../../data.json';
+import { fetchOpenTDBQuiz } from '../../api/opentdb';
+import { useParams } from 'react-router-dom';
 
 const Quiz = () => {
   const dispatch = useDispatch();
@@ -25,12 +26,59 @@ const Quiz = () => {
   const answered = useSelector((state: RootState) => state.quiz.answered || {});
   const [showAnswers, setShowAnswers] = useState(false);
 
+  const { quizId } = useParams();
   useEffect(() => {
-    // Load first quiz from data.json into Redux on mount
-    if (Array.isArray(quizData) && quizData.length > 0) {
-      dispatch(setCurrentQuiz(quizData[0]));
+    // If quizId is in the format "opentdb-<catId>|<catId>", extract category and fetch
+    let categoryId = '';
+    if (quizId && quizId.includes('|')) {
+      const parts = quizId.split('|');
+      // We'll get the real category name from the API response below
+      categoryId = parts[1];
     }
-  }, [dispatch]);
+    if (categoryId) {
+      fetch(`https://opentdb.com/api.php?amount=10&category=${categoryId}&type=multiple`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.response_code === 0) {
+            const categoryName = data.results[0]?.category || 'Quiz';
+            dispatch(setCurrentQuiz({
+              id: quizId || '',
+              title: categoryName,
+              questions: data.results.map((q: unknown, idx: number) => {
+                const qq = q as { question: string; correct_answer: string; incorrect_answers: string[] };
+                return {
+                  id: idx,
+                  question: decodeHtml(qq.question),
+                  options: shuffle([qq.correct_answer, ...qq.incorrect_answers].map(decodeHtml)),
+                  answer: decodeHtml(qq.correct_answer),
+                };
+              }),
+            }));
+          }
+        });
+    } else {
+      fetchOpenTDBQuiz(10)
+        .then((quiz) => {
+          dispatch(setCurrentQuiz(quiz));
+        })
+        .catch(() => {
+          // Optionally, handle error (show message or fallback)
+        });
+    }
+  }, [dispatch, quizId]);
+
+  function shuffle(array: string[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+  function decodeHtml(html: string) {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+  }
 
   useEffect(() => {
     if (timer > 0 && !showResult) {
@@ -77,9 +125,10 @@ const Quiz = () => {
 
   const handleRestart = () => {
     dispatch(restartQuiz());
-    if (Array.isArray(quizData) && quizData.length > 0) {
-      dispatch(setCurrentQuiz(quizData[0]));
-    }
+    fetchOpenTDBQuiz(10)
+      .then((quiz) => {
+        dispatch(setCurrentQuiz(quiz));
+      });
     setShowAnswers(false);
   };
 

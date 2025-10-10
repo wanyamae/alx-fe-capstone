@@ -22,6 +22,7 @@ export interface QuizAttempt {
   title: string;
   score: number;
   date: string;
+  username: string;
 }
 
 export interface QuizState {
@@ -110,13 +111,14 @@ const quizSlice = createSlice({
       title: string;
       score: number;
       date: string;
+      username: string;
     }>) {
       state.completedQuizzes.push(action.payload);
     },
     addAttemptedQuiz(state, action: PayloadAction<QuizAttempt>) {
-      // Only add if not already attempted (by id and score/date)
+      // Only add if not already attempted (by id, username, and date)
       const exists = state.attemptedQuizzes.some(
-        (q: QuizAttempt) => q.id === action.payload.id && q.date === action.payload.date
+        (q: QuizAttempt) => q.id === action.payload.id && q.username === action.payload.username && q.date === action.payload.date
       );
       if (!exists) {
         state.attemptedQuizzes.push(action.payload);

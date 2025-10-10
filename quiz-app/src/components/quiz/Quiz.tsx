@@ -9,6 +9,7 @@ import quizData from '../../data.json';
 const Quiz = () => {
   const dispatch = useDispatch();
   const quiz = useSelector((state: RootState) => state.quiz.currentQuiz);
+  const user = useSelector((state: RootState) => state.auth.user);
   const current = useSelector((state: RootState) => state.quiz.current);
   // Handler to navigate to a specific question
   const handleNavigate = (index: number) => {
@@ -69,8 +70,9 @@ const Quiz = () => {
       title: quiz.title,
       score,
       date: new Date().toISOString(),
+      username: user?.username || 'Guest',
     }));
-    setShowAnswers(true);
+    setShowAnswers(false); // Show performance/results page after finish
   };
 
   const handleRestart = () => {
@@ -114,12 +116,32 @@ const Quiz = () => {
             showAnswers ? (
               <AnswersColumn questions={questions} answered={answered} />
             ) : (
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Your Final Score: {score} / {questions.length}</h3>
-                <button className="mt-4 px-4 py-2 rounded bg-blue-500 text-white" onClick={() => setShowAnswers(true)}>
+              <div
+                className={`rounded-2xl shadow-xl p-8 flex flex-col items-center mb-8
+                  ${score / questions.length >= 0.8
+                    ? 'bg-gradient-to-br from-green-200 to-green-500 dark:from-green-900 dark:to-green-700'
+                    : score / questions.length <= 0.2
+                    ? 'bg-gradient-to-br from-red-200 to-red-500 dark:from-red-900 dark:to-red-700'
+                    : 'bg-gradient-to-br from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-700'}
+                `}
+              >
+                <h3 className="text-3xl font-extrabold mb-2 text-center">
+                  {score / questions.length >= 0.8 && '🎉 Excellent!'}
+                  {score / questions.length <= 0.2 && '😢 Try Again!'}
+                  {score / questions.length > 0.2 && score / questions.length < 0.8 && 'Quiz Complete!'}
+                </h3>
+                <div className="text-5xl font-black mb-2 text-gray-900 dark:text-gray-100">
+                  {score} <span className="text-2xl font-bold">/ {questions.length}</span>
+                </div>
+                <div className="mb-4 text-lg text-gray-700 dark:text-gray-200 text-center">
+                  {score / questions.length >= 0.8 && 'You aced it!'}
+                  {score / questions.length <= 0.2 && 'Don’t give up, try again!'}
+                  {score / questions.length > 0.2 && score / questions.length < 0.8 && 'Good effort! Review your answers below.'}
+                </div>
+                <button className="mt-4 px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition" onClick={() => setShowAnswers(true)}>
                   Show Correct Answers
                 </button>
-                <button className="mt-4 ml-4 px-4 py-2 rounded bg-gray-500 text-white" onClick={handleRestart}>
+                <button className="mt-4 ml-4 px-4 py-2 rounded bg-gray-500 text-white font-semibold hover:bg-gray-600 transition" onClick={handleRestart}>
                   Restart Quiz
                 </button>
               </div>

@@ -11,11 +11,17 @@ type CompletedQuiz = {
   title: string;
   score: number;
   date: string;
+  username: string;
 };
 
 const QuizList: React.FC<QuizListProps> = ({ onSelectQuiz }) => {
   const quizzes = useSelector((state: RootState) => state.quiz.allQuizzes as Quiz[]);
-  const attempted = useSelector((state: RootState) => state.quiz.attemptedQuizzes as CompletedQuiz[]);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const attempted = useSelector((state: RootState) => {
+    const all = (state.quiz.attemptedQuizzes as CompletedQuiz[]) || [];
+    if (!user || user.username === 'Guest') return all;
+    return all.filter(q => q.username === user.username);
+  });
 
   return (
     <div className="mb-2">
@@ -27,7 +33,15 @@ const QuizList: React.FC<QuizListProps> = ({ onSelectQuiz }) => {
             <li key={quiz.id} className={`flex justify-between items-center p-4 rounded shadow ${attempt ? 'bg-green-50 dark:bg-green-900' : 'bg-white dark:bg-gray-800'}`}>
               <span className="font-semibold">{quiz.title}</span>
               {attempt ? (
-                <span className="text-green-700 dark:text-green-200 font-bold">Completed (Score: {attempt.score})</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-green-700 dark:text-green-200 font-bold">Completed (Score: {attempt.score})</span>
+                  <button
+                    className="px-3 py-1 rounded bg-yellow-500 text-white font-bold hover:bg-yellow-600 transition"
+                    onClick={() => onSelectQuiz(quiz.id)}
+                  >
+                    Retake Quiz
+                  </button>
+                </div>
               ) : (
                 <button
                   className="px-4 py-2 rounded bg-blue-500 text-white font-bold hover:bg-blue-600"

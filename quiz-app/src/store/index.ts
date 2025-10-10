@@ -1,11 +1,13 @@
 
 
 import { configureStore } from '@reduxjs/toolkit';
+
 import navbarReducer from './navbarSlice';
 import themeReducer from './themeSlice';
 import pageReducer from './pageSlice';
 import userReducer from './userSlice';
 import quizReducer from './quizSlice';
+import authReducer from './authSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +16,7 @@ export const store = configureStore({
     page: pageReducer,
     user: userReducer,
     quiz: quizReducer,
+    auth: authReducer,
   },
 });
 

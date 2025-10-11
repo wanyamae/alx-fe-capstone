@@ -5,19 +5,8 @@ import type { OpenTDBCategory } from '../../api/opentdbCategories';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
 import type { Quiz } from '../../store/quizSlice';
-import { fetchQuizzesByCategory } from '../../store/quizSlice';
-
-interface QuizListProps {
-  onSelectQuiz: (quizId: string) => void;
-}
-
-type CompletedQuiz = {
-  id: string;
-  title: string;
-  score: number;
-  date: string;
-  username: string;
-};
+import { fetchQuizzesByCategory, setCategories } from '../../store/quizSlice';
+import type { QuizListProps, CompletedQuiz } from '../../interface';
 
 
 const QuizList: React.FC<QuizListProps> = ({ onSelectQuiz }) => {
@@ -29,15 +18,18 @@ const QuizList: React.FC<QuizListProps> = ({ onSelectQuiz }) => {
   });
 
   // State for OpenTDB categories and selected category
-  const [categories, setCategories] = useState<OpenTDBCategory[]>([]);
+  // Use categories from Redux store
+  const categories = useSelector((state: RootState) => state.quiz.categories || []);
   const [selectedCategory, setSelectedCategory] = useState<OpenTDBCategory | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const quizzes = useSelector((state: RootState) => state.quiz.allQuizzes as Quiz[]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchOpenTDBCategories().then(setCategories);
-  }, []);
+    fetchOpenTDBCategories().then((cats) => {
+      dispatch(setCategories(cats));
+    });
+  }, [dispatch]);
 
   // Fetch quizzes for selected category using Redux
   useEffect(() => {
@@ -83,7 +75,7 @@ const QuizList: React.FC<QuizListProps> = ({ onSelectQuiz }) => {
                       <span className="text-green-700 dark:text-green-200 font-bold">Completed (Score: {attempt.score})</span>
                       <button
                         className="px-3 py-1 rounded bg-yellow-500 text-white font-bold hover:bg-yellow-600 transition"
-                        onClick={() => onSelectQuiz(`${quiz.id}|${selectedCategory?.id || ''}`)}
+                        onClick={() => onSelectQuiz(`${quiz.id}|${selectedCategory?.id || ''}|${selectedCategory?.name || ''}`)}
                       >
                         Retake Quiz
                       </button>

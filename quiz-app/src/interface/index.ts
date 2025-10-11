@@ -15,3 +15,15 @@ export interface AnswersColumnProps {
   questions: QuizQuestion[];
   answered: { [key: number]: string };
 }
+
+export interface QuizListProps {
+  onSelectQuiz: (quizId: string) => void;
+}
+
+export type CompletedQuiz = {
+  id: string;
+  title: string;
+  score: number;
+  date: string;
+  username: string;
+};

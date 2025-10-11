@@ -10,6 +10,8 @@ import { useParams } from 'react-router-dom';
 const Quiz = () => {
   const dispatch = useDispatch();
   const quiz = useSelector((state: RootState) => state.quiz.currentQuiz);
+  // Get cached categories from Redux (populated by QuizList)
+  const categories = useSelector((state: RootState) => state.quiz.categories || []);
   const user = useSelector((state: RootState) => state.auth.user);
   const current = useSelector((state: RootState) => state.quiz.current);
   // Handler to navigate to a specific question
@@ -27,6 +29,18 @@ const Quiz = () => {
   const [showAnswers, setShowAnswers] = useState(false);
 
   const { quizId } = useParams();
+  // Extract categoryId from quizId param if present
+  let categoryId = '';
+  if (quizId && quizId.includes('|')) {
+    const parts = quizId.split('|');
+    categoryId = parts[1] || '';
+  }
+  // Look up category name from Redux store
+  let categoryName = '';
+  if (categoryId && categories.length > 0) {
+    const found = categories.find((cat) => String((cat as { id: number }).id) === String(categoryId));
+    if (found && 'name' in found) categoryName = (found as { name: string }).name;
+  }
   useEffect(() => {
     // If quizId is in the format "opentdb-<catId>|<catId>", extract category and fetch
     let categoryId = '';
@@ -34,6 +48,7 @@ const Quiz = () => {
       const parts = quizId.split('|');
       // We'll get the real category name from the API response below
       categoryId = parts[1];
+
     }
     if (categoryId) {
       fetch(`https://opentdb.com/api.php?amount=10&category=${categoryId}&type=multiple`)
@@ -159,7 +174,14 @@ const Quiz = () => {
         {/* Main Quiz Column */}
         <div className="flex-1 px-8">
           <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-bold">{quiz.title}</h2>
+            <h2 className="text-xl font-bold">
+              {quiz.title}
+              {categoryName && (
+                <span className="ml-2 text-base font-normal text-blue-600 dark:text-blue-300">
+                  ({categoryName})
+                </span>
+              )}
+            </h2>
           </div>
           {showResult ? (
             showAnswers ? (

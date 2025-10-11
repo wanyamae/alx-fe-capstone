@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { logout, login } from './authSlice';
 
 // Async thunk to fetch quizzes for a category
 export const fetchQuizzesByCategory = createAsyncThunk(
@@ -47,6 +48,7 @@ function shuffle(array: string[]) {
 }
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import type { OpenTDBCategory } from '../api/opentdbCategories';
 
 
 
@@ -84,6 +86,7 @@ export interface QuizState {
   quizCache: { [categoryId: string]: Quiz[] };
   completedQuizzes: QuizAttempt[];
   attemptedQuizzes: QuizAttempt[];
+  categories: OpenTDBCategory[];
 }
 
 const initialState: QuizState = {
@@ -102,6 +105,7 @@ const initialState: QuizState = {
   quizCache: {},
   completedQuizzes: [],
   attemptedQuizzes: [],
+  categories: [],
 };
 
 
@@ -109,13 +113,13 @@ const quizSlice = createSlice({
   name: 'quiz',
   initialState,
   reducers: {
-    setCurrent(state, action: PayloadAction<number>) {
+    setCurrent(state: QuizState, action: PayloadAction<number>) {
       state.current = action.payload;
     },
-    answerQuestion(state, action: PayloadAction<{ index: number; answer: string }>) {
+    answerQuestion(state: QuizState, action: PayloadAction<{ index: number; answer: string }>) {
       state.answered[action.payload.index] = action.payload.answer;
     },
-    setCurrentQuiz(state, action: PayloadAction<Quiz>) {
+    setCurrentQuiz(state: QuizState, action: PayloadAction<Quiz>) {
       state.currentQuiz = action.payload;
       state.current = 0;
       state.selected = null;
@@ -123,10 +127,10 @@ const quizSlice = createSlice({
       state.score = 0;
       state.timer = 120;
     },
-    selectAnswer(state, action: PayloadAction<string>) {
+    selectAnswer(state: QuizState, action: PayloadAction<string>) {
       state.selected = action.payload;
     },
-    nextQuestion(state) {
+    nextQuestion(state: QuizState) {
       if (state.selected === state.currentQuiz.questions[state.current].answer) {
         state.score += 1;
       }
@@ -137,25 +141,25 @@ const quizSlice = createSlice({
         state.showResult = true;
       }
     },
-    restartQuiz(state) {
+    restartQuiz(state: QuizState) {
       state.current = 0;
       state.selected = null;
       state.showResult = false;
       state.score = 0;
       state.timer = 60;
     },
-    finishQuiz(state) {
+    finishQuiz(state: QuizState) {
       state.showResult = true;
     },
-    tick(state) {
+    tick(state: QuizState) {
       if (state.timer > 0) {
         state.timer -= 1;
       }
     },
-    setAllQuizzes(state, action: PayloadAction<Quiz[]>) {
+    setAllQuizzes(state: QuizState, action: PayloadAction<Quiz[]>) {
       state.allQuizzes = action.payload;
     },
-    addCompletedQuiz(state, action: PayloadAction<{
+    addCompletedQuiz(state: QuizState, action: PayloadAction<{
       id: string;
       title: string;
       score: number;
@@ -164,7 +168,7 @@ const quizSlice = createSlice({
     }>) {
       state.completedQuizzes.push(action.payload);
     },
-    addAttemptedQuiz(state, action: PayloadAction<QuizAttempt>) {
+    addAttemptedQuiz(state: QuizState, action: PayloadAction<QuizAttempt>) {
       // Only add if not already attempted (by id, username, and date)
       const exists = state.attemptedQuizzes.some(
         (q: QuizAttempt) => q.id === action.payload.id && q.username === action.payload.username && q.date === action.payload.date
@@ -173,8 +177,11 @@ const quizSlice = createSlice({
         state.attemptedQuizzes.push(action.payload);
       }
     },
-    incrementScore(state) {
+    incrementScore(state: QuizState) {
       state.score += 1;
+    },
+    setCategories(state: QuizState, action: PayloadAction<OpenTDBCategory[]>) {
+      state.categories = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -189,7 +196,9 @@ const quizSlice = createSlice({
       .addCase(fetchQuizzesByCategory.rejected, (state) => {
         state.allQuizzes = [];
         // Optionally, you could add an error field to state and set it here
-      });
+      })
+      .addCase(logout.fulfilled, () => initialState)
+      .addCase(login.fulfilled, () => initialState);
   },
 });
 
@@ -204,6 +213,7 @@ export const {
   setAllQuizzes,
   addCompletedQuiz,
   incrementScore,
-  addAttemptedQuiz
+  addAttemptedQuiz,
+  setCategories
 } = quizSlice.actions;
 export default quizSlice.reducer;

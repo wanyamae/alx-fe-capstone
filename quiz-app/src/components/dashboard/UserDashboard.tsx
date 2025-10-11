@@ -13,6 +13,7 @@ const UserDashboard: React.FC = () => {
   const handleSelectQuiz = (quizId: string) => {
     const selectedQuiz = quizzes.find((quiz: Quiz) => quiz.id === quizId);
     if (selectedQuiz) {
+      dispatch({ type: 'quiz/restartQuiz' });
       dispatch(setCurrentQuiz(selectedQuiz));
       // TODO: navigate to quiz page if needed
     }

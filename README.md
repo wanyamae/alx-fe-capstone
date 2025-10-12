@@ -3,6 +3,7 @@
 
 ## Updated Tasks & Progress
 
+
 ### ✅ Completed
 
 1. **Project Initialization**
@@ -42,13 +43,74 @@
 	- ESLint and TypeScript configured
 	- Lint errors fixed after major changes
 
-### ⏳ Pending / In Progress
+---
 
-- API integration for real quiz/user data
-- User authentication and roles
-- Quiz review/feedback features
-- More dashboard analytics
-- Accessibility improvements
+#### 🗓️ Week 2 Progress
+
+- **Quiz API Integration:**
+	- Set up API calls to fetch quiz questions and categories from OpenTDB.
+	- Created `opentdb.ts` and `opentdbCategories.ts` in `src/api/` for modular API logic.
+	- Wired up quiz start to use real API data (not just local `data.json`).
+
+- **User Authentication (WIP):**
+	- Built out `Login` and `LoginForm` components (UI, validation, Redux wiring).
+	- Added `RequireAuth` wrapper for protected routes (basic version).
+
+- **Dashboard Enhancements:**
+	- Improved `HomeDashboard` and `UserDashboard` with more stats and charts.
+	- Added `PerformanceChart` for quiz analytics (dummy data for now).
+
+- **Quiz Review/Feedback Prep:**
+	- Started groundwork for quiz review feature (UI placeholders, Redux slice updates).
+
+- **General Fixes & Refactoring:**
+	- Cleaned up folder structure for clarity (moved/renamed some components).
+	- Improved TypeScript types in `interface/`.
+	- Minor UI polish and bugfixes across the board.
+
+### ⏳ Pending / Next Up
+
+- **Review and Optimize API Fetching:**
+	- Refactor API logic for efficiency and error handling
+	- Ensure quiz fetching supports all assignment requirements (topics, difficulty, amount)
+
+- **Quiz Topic & Difficulty Selection:**
+	- Let users choose topic, number of questions, and difficulty before starting
+	- Display available topics from OpenTDB dynamically
+
+- **Quiz Interface Enhancements:**
+	- Show one question at a time with navigation
+	- Indicate correct/incorrect answers after submission
+	- Add question timer (stretch goal)
+
+- **Final Score & Review:**
+	- Show summary of correct/incorrect answers at end
+	- Display explanations for answers if available
+	- Allow quiz retake or topic change
+
+- **Quiz History & Performance Tracking:**
+	- Track and display quiz history (scores, topics)
+	- Show user progress over time (average/best score)
+
+- **Search Functionality:**
+	- Add search bar for quiz topics/keywords
+	- Handle no results with user-friendly messages
+
+- **Responsive UI & Accessibility:**
+	- Polish mobile/tablet/desktop layouts
+	- Improve keyboard navigation, ARIA, and color contrast
+
+- **Error Handling:**
+	- Handle network/API errors and invalid responses
+	- Show clear, user-friendly error messages
+
+- **User Authentication:**
+	- Finalize login/logout flow and error handling
+	- Add user roles (admin, regular user)
+
+- **General Polish & Deployment:**
+	- UI/UX tweaks, bugfixes, and code cleanup
+	- Deploy to Netlify/Vercel and test accessibility/performance
 
 ## Technology Stack
 

@@ -3,7 +3,6 @@
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import QuizList from '../dashboard/QuizList';
-import QuizCategories from './QuizCategories';
 import { useNavigate } from 'react-router-dom';
 import { BriefcaseIcon, UserGroupIcon, StarIcon, ScaleIcon } from '@heroicons/react/24/outline';
 
@@ -75,9 +74,7 @@ export default function HomeDashboard() {
       { /* Performance Chart Section */}
       <div className="mt-10">
       </div>
-      {/* Quiz Categories and Quizzes List */}
       <div className="mt-10">
-        <QuizCategories />
         <QuizList onSelectQuiz={(quizId: string) => navigate(`/quiz/${quizId}`)} />
         {/* Add more activity items */}
       </div>
